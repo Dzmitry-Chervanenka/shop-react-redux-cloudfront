@@ -31,17 +31,18 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
       method: "GET",
       url,
       params: {
-        // @ts-ignore
-        name: encodeURIComponent(file.name),
+        name: encodeURIComponent((file as File).name),
+      },
+      headers: {
+        Authorization: "Basic " + localStorage.getItem("authorization_token"),
       },
     });
     // @ts-ignore
     console.log("File to upload: ", file.name);
     console.log("Uploading to: ", response.data);
-    const result = await fetch(response.data.url, {
-      method: "PUT",
-      body: file,
-    });
+    const formData = new FormData();
+    formData.append("file", file);
+    const result = await axios.put(response.data.url, formData);
     console.log("Result: ", result);
     // @ts-ignore
     setFile("");
